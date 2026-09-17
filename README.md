@@ -97,7 +97,7 @@ Foram criadas três VMs: `SRV-Zabbix-Davi`, `SRV-Grafana-Davi` e `SRV-Linux-Davi
 * CPU/RAM/disco
 * Sistema operacional instalado
 
-!\[Fase 02 — VMs e sistemas operacionais](imagens/fase02-vms.png)
+![Fase 02 — VMs e sistemas operacionais](imagens/fase02-vms.png)
 
 \---
 
@@ -124,7 +124,7 @@ Os três servidores receberam IP estático (`10.110.102.114`, `10.110.102.104`, 
 * ping entre VMs
 * resolução DNS
 
-!\[Fase 03 — IP estático e conectividade](imagens/fase03-conectividade.png)
+![Fase 03 — IP estático e conectividade](imagens/fase03-conectividade.png)
 
 \---
 
@@ -150,7 +150,7 @@ Os hostnames foram padronizados (`SRV-Zabbix-Davi`, `SRV-Grafana-Davi`, `SRV-Lin
 * timedatectl
 * apt update/upgrade
 
-!\[Fase 04 — Preparação Linux](imagens/fase04-preparacao-linux.png)
+![Fase 04 — Preparação Linux](imagens/fase04-preparacao-linux.png)
 
 \---
 
@@ -177,7 +177,7 @@ No `SRV-Linux-Davi`, SSH e Apache 2.4.52 foram instalados, habilitados e testado
 * ss -lntp
 * curl
 
-!\[Fase 05 — Serviços SSH e HTTP](imagens/fase05-servicos.png)
+![Fase 05 — Serviços SSH e HTTP](imagens/fase05-servicos.png)
 
 \---
 
@@ -204,7 +204,9 @@ Foi registrado o baseline da rede `10.110.102.0/24` e capturados ICMP, ARP, DNS,
 * ICMP/ARP/DNS
 * TLS/HTTPS
 
-!\[Fase 06 — Diagnóstico manual e Wireshark](imagens/fase06-wireshark.png)
+![Fase 06 — Diagnóstico manual e Wireshark](imagens/fase06-ICMP.png)
+![Fase 06 — Diagnóstico manual e Wireshark](imagens/fase06-ARP.png)
+![Fase 06 — Diagnóstico manual e Wireshark](imagens/fase06-TLS.png)
 
 \---
 
@@ -230,7 +232,6 @@ No `SRV-Zabbix-Davi`, PostgreSQL, Zabbix Server, frontend Nginx/PHP-FPM e Zabbix
 * Portas 80/10050/10051
 * Tela do frontend
 
-!\[Fase 07 — Zabbix Server](imagens/fase07-zabbix-server.png)
 
 \---
 
@@ -256,7 +257,6 @@ O `SRV-Linux-Davi` foi cadastrado como host e o Zabbix Agent passou a enviar mé
 * Agent ativo
 * Latest data
 
-!\[Fase 08 — Hosts e Zabbix Agent](imagens/fase08-agent2.png)
 
 \---
 
@@ -283,7 +283,6 @@ Foram validados ICMP, HTTP, CPU, memória, disco, rede, uptime e a visão de Pro
 * CPU/memória/disco
 * Problems
 
-!\[Fase 09 — Monitoramento no Zabbix](imagens/fase09-monitoramento.png)
 
 \---
 
@@ -309,7 +308,6 @@ O Grafana foi instalado no `SRV-Grafana-Davi` (`10.110.102.104`) e o acesso fico
 * porta 3000
 * login funcional
 
-!\[Fase 10 — Grafana](imagens/fase10-grafana.png)
 
 \---
 
@@ -333,7 +331,7 @@ Foi criada a identidade `grafana\_ro` no `SRV-Zabbix-Davi`, com permissão somen
 * Permissão Read
 * Token mascarado
 
-!\[Fase 11 — API Zabbix](imagens/fase11-api-zabbix.png)
+![Fase 11 — API Zabbix](imagens/fase11-api-zabbix.png)
 
 \---
 
@@ -357,8 +355,6 @@ O plugin Zabbix foi habilitado no `SRV-Grafana-Davi` e o data source `Zabbix-NOC
 * URL da API
 * Save \& test OK
 
-!\[Fase 12 — Integração Grafana + Zabbix](imagens/fase12-integracao.png)
-
 \---
 
 ## Fase 13 — Dashboard NOC
@@ -381,7 +377,6 @@ O dashboard reúne disponibilidade dos hosts, CPU, memória, disco, rede, HTTP, 
 * Métricas com unidades
 * Período de tempo coerente
 
-!\[Fase 13 — Dashboard NOC](imagens/fase13-dashboard.png)
 
 \---
 
@@ -406,8 +401,6 @@ As regras de firewall e os privilégios foram revisados nas três VMs, evitando 
 * ufw status numbered
 * Regras de acesso
 * Sem segredos no repositório
-
-!\[Fase 14 — Segurança](imagens/fase14-seguranca.png)
 
 \---
 
@@ -435,7 +428,6 @@ Foi simulado o Apache parado no `SRV-Linux-Davi`. O host permaneceu acessível p
 * Correção
 * Validação
 
-!\[Fase 15 — Simulação de incidentes](imagens/fase15-incidentes.png)
 
 \---
 
@@ -460,7 +452,48 @@ As evidências foram organizadas neste README, preservando o histórico técnico
 * Dificuldades
 * Melhorias futuras
 
-!\[Fase 16 — Evidências e documentação final](imagens/fase16-evidencias.png)
+## Conclusão
+
+Ainda não posso escrever a versão final — ela depende do que você realmente viveu no laboratório. Mas com base no que já apareceu (rede 10.110.102.0/24, PostgreSQL+Nginx no Zabbix, o obstáculo do Agent 2), um rascunho seria:
+
+O laboratório permitiu construir, na prática, uma operação NOC completa: da definição de endereçamento até a correlação entre disponibilidade (ICMP), serviço (HTTP/SSH) e coleta de métricas (Zabbix Agent). Um dos aprendizados centrais foi perceber que essas três camadas falham de forma independente — um host pode responder ping e, mesmo assim, não estar sendo monitorado corretamente por causa de incompatibilidade de pacotes.
+
+## Dificuldades
+
+Essa é a parte onde você já tem material real: os dois prints do erro zabbix-agent2 : Depends: libc6 (>= 2.38)... not installable. Isso aconteceu porque o repositório oficial do Zabbix 7.4 exige uma libc/libssl mais nova do que a disponível no Ubuntu 22.04 "jammy".
+
+Preciso que você me diga como resolveu para eu escrever esse trecho corretamente — por exemplo:
+
+Trocou para o repositório do Zabbix 6.4/6.0 (compatível com jammy)?
+Instalou o zabbix-agent clássico em vez do agent2?
+Outra solução?
+Melhorias futuras
+
+Baseado no que você já implementou, dá pra sugerir, por exemplo:
+
+HTTPS no Nginx do Zabbix (hoje é HTTP puro, porta 8080)
+Fechar a porta 8080 externamente e manter só acesso interno
+Ajustar o gateway na documentação (10.110.10.1 vs rede 10.110.102.0/24)
+Automatizar a instalação do Agent com Ansible, evitando o problema de dependência manualmente
+Retenção de dados / backup das configurações do Zabbix e Grafana
+
+| Fase | Status | Evidência |
+|---|---|---|
+| 01 — Planejamento | ✅ | Diagrama de topologia gerado |
+| 02 — VMs | ❌ falta | `nproc`, `free -h`, `lsblk` de cada servidor |
+| 03 — Conectividade | ✅ | `ip -br addr` / `ip route` / `ping` cruzado |
+| 04 — Preparação Linux | ✅ | `hostnamectl` / `timedatectl` / `apt update` |
+| 05 — SSH e HTTP | ❌ falta | Precisa ser no **SRV-Linux-Davi** (Apache), não no Zabbix Server |
+| 06 — Wireshark | ⚠️ parcial | Tem ICMP, ARP, TLS — faltam **DNS** e **TCP** (three-way handshake) |
+| 07 — Zabbix Server | ✅ | `systemctl status ssh/nginx` + `ss -lntp` |
+| 08 — Agent | ⚠️ parcial | Tem os erros de instalação — falta o **agent funcionando** + host cadastrado (Latest data) |
+| 09 — Monitoramento | ❌ falta | Latest data (CPU/mem/disco/rede) + Problems |
+| 10 — Grafana | ❌ falta | Tela de login/porta 3000 |
+| 11 — API Zabbix | ✅ | Usuário `grafana_ro` criado |
+| 12 — Integração | ❌ falta | Data source Zabbix-NOC + Save & test |
+| 13 — Dashboard | ✅ | Dashboard com CPU/memória/rede |
+| 14 — Segurança | ❌ falta | `ufw status numbered` |
+| 15 — Incidente | ❌ falta | Simulação Apache parado/restaurado |
 
 \---
 
@@ -497,15 +530,6 @@ projeto-noc-davi/
     ├── fase04-preparacao-linux.png
     ├── fase05-servicos.png
     ├── fase06-wireshark.png
-    ├── fase07-zabbix-server.png
-    ├── fase08-agent2.png
-    ├── fase09-monitoramento.png
-    ├── fase10-grafana.png
     ├── fase11-api-zabbix.png
-    ├── fase12-integracao.png
-    ├── fase13-dashboard.png
-    ├── fase14-seguranca.png
-    ├── fase15-incidentes.png
-    └── fase16-evidencias.png
 ```
 
